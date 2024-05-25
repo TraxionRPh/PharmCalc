@@ -28,7 +28,7 @@ class PharmacistCalculator(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Pharmacist Calculator")
-        self.setGeometry(100, 100, 800, 600)
+        self.setGeometry(100, 100, 700, 500)
 
         self.settings = QSettings("TraxionRPh", "PharmacistCalculator")
         
@@ -351,6 +351,56 @@ class PharmacistCalculator(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setStyle("Fusion")
+    stylesheet = """
+    QMainWindow {
+        background-color: #f0f0f0;
+    }
+    QLabel {
+        font-size: 14px;
+        color: #333;
+    }
+    QPushButton {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        font-size: 14px;
+    }
+    QPushButton:hover {
+        background-color: #45a049;
+    }
+    QPushButton:pressed {
+        background-color: #2e7d32;
+    }
+    QLineEdit, QDateEdit, QComboBox {
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        padding: 5px;
+        font-size: 12px;
+    }
+    QTabWidget::pane {
+        border: 1px solid #cccccc;
+        background: #ffffff;
+    }
+    QTabBar::tab {
+        background: #e0e0e0;
+        padding: 5px;
+        font-size: 14px;
+        border: 1px solid #cccccc;
+        border-bottom-color: #f0f0f0; /* same as pane color */
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+    }
+    QTabBar::tab:selected {
+        background: #d0d0d0;
+    }
+    QTabBar::tab:hover {
+        background: #c0c0c0;
+    }
+    """
+    app.setStyleSheet(stylesheet)
     window = PharmacistCalculator()
     window.show()
     sys.exit(app.exec())
