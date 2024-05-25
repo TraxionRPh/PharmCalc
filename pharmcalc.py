@@ -14,8 +14,14 @@ from PyQt6.QtWidgets import (
     QComboBox,
 )
 from PyQt6.QtCore import QDate, QSettings
-from PyQt6.QtGui import QIntValidator
+from PyQt6.QtGui import QIntValidator, QDoubleValidator
 from datetime import datetime, timedelta
+
+def format_number(number):
+    if number ==int(number):
+        return str(int(number))
+    else:
+        return f"{number:.2f}".rstrip('0').rstrip('.')
 
 class PharmacistCalculator(QMainWindow):
     #Initialization
@@ -214,7 +220,7 @@ class PharmacistCalculator(QMainWindow):
             days_remaining = total_days_supply - days_since_oldest_fill
             if days_remaining < 0:
                 days_remaining = 0
-            self.accumulation_result.setText(f"Total accumulated days: {days_remaining}")
+            self.accumulation_result.setText(f"Total accumulated days: {format_number(days_remaining)}")
         except ValueError:
             self.accumulation_result.setText("Invalid input")
 
@@ -227,7 +233,7 @@ class PharmacistCalculator(QMainWindow):
         grid.setSpacing(10)
         grid.addWidget(QLabel("Patient Weight:"), 0, 0)
         self.weight = QLineEdit()
-        self.weight.setValidator(QIntValidator())
+        self.weight.setValidator(QDoubleValidator())
         self.weight.setFixedWidth(100)
         grid.addWidget(self.weight, 0, 1)
 
@@ -238,7 +244,7 @@ class PharmacistCalculator(QMainWindow):
 
         grid.addWidget(QLabel("Dose (mg):"), 1, 0)
         self.dose = QLineEdit()
-        self.dose.setValidator(QIntValidator())
+        self.dose.setValidator(QDoubleValidator())
         self.dose.setFixedWidth(100)
         grid.addWidget(self.dose, 1, 1)
 
@@ -275,9 +281,9 @@ class PharmacistCalculator(QMainWindow):
             mg_per_kg_per_day = mg_per_kg_per_dose * doses_per_day
             total_mg_per_day = dose * doses_per_day
 
-            result_text = f"mg/kg per dose: {mg_per_kg_per_dose:.2f}\n"
-            result_text += f"mg/kg per day: {mg_per_kg_per_day:.2f}\n"
-            result_text += f"Total mg per day: {total_mg_per_day}"
+            result_text = f"mg/kg per dose: {format_number(mg_per_kg_per_dose)}\n"  
+            result_text += f"mg/kg per day: {format_number(mg_per_kg_per_day)}\n"
+            result_text += f"Total mg per day: {format_number(total_mg_per_day)}"
             self.result_label_dosing.setText(result_text)
         except ValueError:
             self.result_label_dosing.setText("Invalid input")
@@ -288,20 +294,20 @@ class PharmacistCalculator(QMainWindow):
         layout = QVBoxLayout()
 
         grid = QGridLayout()
-        grid.addWidget(QLabel("ml per dose:"), 0, 0)
-        self.mls_per_dose = QLineEdit()
-        self.mls_per_dose.setValidator(QIntValidator())
-        grid.addWidget(self.mls_per_dose, 0, 1)
-
-        grid.addWidget(QLabel("Total quantity prescribed (ml):"), 1, 0)
-        self.total_quantity_prescribed = QLineEdit()
-        self.total_quantity_prescribed.setValidator(QIntValidator())
-        grid.addWidget(self.total_quantity_prescribed, 1, 1)
-
         grid.addWidget(QLabel("Current Strength (mg/ml):"), 2, 0)
         self.current_strength = QComboBox()
         self.current_strength.addItems(["125 mg/ml", "200 mg/ml", "250 mg/ml", "400 mg/ml", "500 mg/ml"])
         grid.addWidget(self.current_strength, 2, 1)
+
+        grid.addWidget(QLabel("ml per dose:"), 0, 0)
+        self.mls_per_dose = QLineEdit()
+        self.mls_per_dose.setValidator(QDoubleValidator())
+        grid.addWidget(self.mls_per_dose, 0, 1)
+
+        grid.addWidget(QLabel("Total quantity prescribed (ml):"), 1, 0)
+        self.total_quantity_prescribed = QLineEdit()
+        self.total_quantity_prescribed.setValidator(QDoubleValidator())
+        grid.addWidget(self.total_quantity_prescribed, 1, 1)
 
         grid.addWidget(QLabel("New Strength (mg/ml):"), 3, 0)
         self.new_strength = QComboBox()
@@ -332,8 +338,8 @@ class PharmacistCalculator(QMainWindow):
             new_mls_per_dose = total_mg / new_strength
             new_total_quantity = (total_quantity_prescribed * current_strength) / new_strength
 
-            result_text = f"New ml per dose {new_mls_per_dose:.2f}\n"
-            result_text +=f"New total quantity: {new_total_quantity:.2f} ml"
+            result_text = f"New ml per dose {format_number(new_mls_per_dose)}\n"
+            result_text +=f"New total quantity: {format_number(new_total_quantity)} ml"
             self.result_label.setText(result_text)
         except ValueError:
             self.result_label.setText("Invalid input")
