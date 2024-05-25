@@ -24,17 +24,18 @@ class PharmacistCalculator(QMainWindow):
         self.setGeometry(100, 100, 800, 600)
 
         self.tabs = QTabWidget()
+        self.tabs.setMovable(True)
         self.setCentralWidget(self.tabs)
 
-        self.create_dates_tab()
+        self.create_date_difference_tab()
+        self.create_fillable_tab()
         self.create_accumulation_tab()
         self.create_dosing_tab()
     
-    def create_dates_tab(self):
-        dates_tab = QWidget()
+    def create_date_difference_tab(self):
+        date_difference_tab = QWidget()
         layout = QVBoxLayout()
 
-        # Date Difference
         grid = QGridLayout()
         grid.setSpacing(10)
         grid.addWidget(QLabel("Select date of last fill:"), 0, 0, 1, 2)
@@ -53,7 +54,13 @@ class PharmacistCalculator(QMainWindow):
 
         layout.addLayout(grid)
 
-        #Date Addition
+        date_difference_tab.setLayout(layout)
+        self.tabs.addTab(date_difference_tab, "Date Difference")
+    
+    def create_fillable_tab(self):
+        fillable_tab = QWidget()
+        layout = QVBoxLayout()
+        
         grid_addition = QGridLayout()
         grid_addition.setSpacing(10)
         grid_addition.addWidget(QLabel("Select the fill date:"), 0, 0, 1, 2)
@@ -79,9 +86,9 @@ class PharmacistCalculator(QMainWindow):
 
         layout.addLayout(grid_addition)
 
-        dates_tab.setLayout(layout)
-        self.tabs.addTab(dates_tab, "Date Calculations")
-    
+        fillable_tab.setLayout(layout)
+        self.tabs.addTab(fillable_tab, "Fillable Date")
+        
     def create_accumulation_tab(self):
         accumulation_tab = QWidget()
         layout = QVBoxLayout()
@@ -155,7 +162,7 @@ class PharmacistCalculator(QMainWindow):
         selected_date = self.date_edit.date().toPyDate()
         today = datetime.today().date()
         diff = (today - selected_date).days
-        self.date_diff_result.setText(f"{diff} days")
+        self.date_diff_result.setText(f"{diff} days ago")
 
     def calculate_date_addition(self):
         start_date = self.date_add_edit.date().toPyDate()
