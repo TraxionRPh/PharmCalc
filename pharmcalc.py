@@ -13,7 +13,7 @@ from PyQt6.QtWidgets import (
     QMessageBox,
     QComboBox,
 )
-from PyQt6.QtCore import QDate
+from PyQt6.QtCore import QDate, QSettings
 from PyQt6.QtGui import QIntValidator
 from datetime import datetime, timedelta
 
@@ -23,14 +23,46 @@ class PharmacistCalculator(QMainWindow):
         self.setWindowTitle("Pharmacist Calculator")
         self.setGeometry(100, 100, 800, 600)
 
+        self.settings = QSettings("MyCompany", "PharmacistCalculator")
+        
         self.tabs = QTabWidget()
         self.tabs.setMovable(True)
         self.setCentralWidget(self.tabs)
 
-        self.create_date_difference_tab()
-        self.create_fillable_tab()
-        self.create_accumulation_tab()
-        self.create_dosing_tab()
+        self.load_tab_order()
+
+    def load_tab_order(self):
+        try:
+            tab_order = self.settings.value("tab_order")
+            for i in range(len(tab_order)):
+                if tab_order[i] == "Date Difference":
+                    self.create_date_difference_tab()
+                elif tab_order[i] == "Fillable Date":
+                    self.create_fillable_tab()
+                elif tab_order[i] == "Accumulation Calculator":
+                    self.create_accumulation_tab()
+                elif tab_order[i] == "Dosing":
+                    self.create_dosing_tab()
+        except TypeError:
+            self.create_date_difference_tab()
+            self.create_fillable_tab()
+            self.create_accumulation_tab()
+            self.create_dosing_tab()
+
+    
+    def save_tab_order(self):
+        tab_order = {}
+        for i in range(self.tabs.count()):
+            tab = self.tabs.widget(i)
+            if tab.objectName() == "Date Difference":
+                tab_order[i] = "Date Difference"
+            elif tab.objectName() == "Fillable Date":
+                tab_order[i] = "Fillable Date"
+            elif tab.objectName() == "Accumulation Calculator":
+                tab_order[i] = "Accumulation Calculator"
+            elif tab.objectName() == "Dosing":
+                tab_order[i] = "Dosing"
+        self.settings.setValue("tab_order", tab_order)
     
     def create_date_difference_tab(self):
         date_difference_tab = QWidget()
@@ -55,6 +87,7 @@ class PharmacistCalculator(QMainWindow):
         layout.addLayout(grid)
 
         date_difference_tab.setLayout(layout)
+        date_difference_tab.setObjectName("Date Difference")
         self.tabs.addTab(date_difference_tab, "Date Difference")
     
     def create_fillable_tab(self):
@@ -87,6 +120,7 @@ class PharmacistCalculator(QMainWindow):
         layout.addLayout(grid_addition)
 
         fillable_tab.setLayout(layout)
+        fillable_tab.setObjectName("Fillable Date")
         self.tabs.addTab(fillable_tab, "Fillable Date")
         
     def create_accumulation_tab(self):
@@ -115,6 +149,7 @@ class PharmacistCalculator(QMainWindow):
         layout.addLayout(self.grid_accumulation)
 
         accumulation_tab.setLayout(layout)
+        accumulation_tab.setObjectName("Accumulation Calculator")
         self.tabs.addTab(accumulation_tab, "Accumulation Calculator")
 
     def create_dosing_tab(self):
@@ -156,6 +191,7 @@ class PharmacistCalculator(QMainWindow):
         layout.addLayout(grid)
 
         dosing_tab.setLayout(layout)
+        dosing_tab.setObjectName("Dosing")
         self.tabs.addTab(dosing_tab, "Dosing")
 
     def calculate_date_difference(self):
@@ -235,6 +271,10 @@ class PharmacistCalculator(QMainWindow):
             self.result_label_dosing.setText(result_text)
         except ValueError:
             self.result_label_dosing.setText("Invalid input")
+    
+    def closeEvent(self, event):
+        self.save_tab_order()
+        event.accept()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
