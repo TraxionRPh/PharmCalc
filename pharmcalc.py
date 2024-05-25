@@ -18,6 +18,7 @@ from PyQt6.QtGui import QIntValidator
 from datetime import datetime, timedelta
 
 class PharmacistCalculator(QMainWindow):
+    #Initialization
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Pharmacist Calculator")
@@ -31,6 +32,7 @@ class PharmacistCalculator(QMainWindow):
 
         self.load_tab_order()
 
+    #Saving and loading
     def load_tab_order(self):
         try:
             tab_order = self.settings.value("tab_order")
@@ -49,7 +51,6 @@ class PharmacistCalculator(QMainWindow):
             self.create_accumulation_tab()
             self.create_dosing_tab()
 
-    
     def save_tab_order(self):
         tab_order = {}
         for i in range(self.tabs.count()):
@@ -64,6 +65,7 @@ class PharmacistCalculator(QMainWindow):
                 tab_order[i] = "Dosing"
         self.settings.setValue("tab_order", tab_order)
     
+    #Date Difference Tab
     def create_date_difference_tab(self):
         date_difference_tab = QWidget()
         layout = QVBoxLayout()
@@ -90,6 +92,13 @@ class PharmacistCalculator(QMainWindow):
         date_difference_tab.setObjectName("Date Difference")
         self.tabs.addTab(date_difference_tab, "Date Difference")
     
+    def calculate_date_difference(self):
+        selected_date = self.date_edit.date().toPyDate()
+        today = datetime.today().date()
+        diff = (today - selected_date).days
+        self.date_diff_result.setText(f"{diff} days ago")
+
+    #Fillable Date Tab
     def create_fillable_tab(self):
         fillable_tab = QWidget()
         layout = QVBoxLayout()
@@ -122,7 +131,24 @@ class PharmacistCalculator(QMainWindow):
         fillable_tab.setLayout(layout)
         fillable_tab.setObjectName("Fillable Date")
         self.tabs.addTab(fillable_tab, "Fillable Date")
+
+    def calculate_date_addition(self):
+        start_date = self.date_add_edit.date().toPyDate()
+        try:
+            days_str = self.days_to_add.text()
+            if days_str:
+                days = int(days_str)
+            else:
+                days = 0
+            result_date = start_date + timedelta(days=days)
+            self.date_add_result.setText(f"{result_date.strftime('%Y-%m-%d')}")
+        except ValueError:
+            self.date_add_result.setText("Invalid number of days")
+        except OverflowError:
+            QMessageBox.critical(self, "Error", "The resulting date is out of range.")
+            self.days_to_add.setText("0")
         
+    #Accumulation Calculator Tab
     def create_accumulation_tab(self):
         accumulation_tab = QWidget()
         layout = QVBoxLayout()
@@ -152,6 +178,42 @@ class PharmacistCalculator(QMainWindow):
         accumulation_tab.setObjectName("Accumulation Calculator")
         self.tabs.addTab(accumulation_tab, "Accumulation Calculator")
 
+    def add_entry(self):
+        fill_date_edit = QDateEdit(calendarPopup=True)
+        fill_date_edit.setDisplayFormat('MM-dd-yyyy')
+        fill_date_edit.setDate(QDate.currentDate())
+        self.fill_dates.append(fill_date_edit)
+
+        days_supply_edit = QLineEdit()
+        days_supply_edit.setValidator(QIntValidator())
+        days_supply_edit.setFixedWidth(100)
+        self.days_supply.append(days_supply_edit)
+
+        row = len(self.fill_dates) + 1
+        self.grid_accumulation.addWidget(fill_date_edit, row, 0)
+        self.grid_accumulation.addWidget(days_supply_edit, row, 1)
+
+    def calculate_accumulation(self):
+        try:
+            total_days_supply = 0
+            today = datetime.today().date()
+            oldest_fill_date = today
+            for i in range(len(self.fill_dates)):
+                fill_date = self.fill_dates[i].date().toPyDate()
+                days_supply = int(self.days_supply[i].text())
+                total_days_supply += days_supply
+                if fill_date < oldest_fill_date:
+                    oldest_fill_date = fill_date
+            
+            days_since_oldest_fill = (today - oldest_fill_date).days
+            days_remaining = total_days_supply - days_since_oldest_fill
+            if days_remaining < 0:
+                days_remaining = 0
+            self.accumulation_result.setText(f"Total accumulated days: {days_remaining}")
+        except ValueError:
+            self.accumulation_result.setText("Invalid input")
+
+    #Dosing Tab
     def create_dosing_tab(self):
         dosing_tab = QWidget()
         layout = QVBoxLayout()
@@ -194,63 +256,6 @@ class PharmacistCalculator(QMainWindow):
         dosing_tab.setObjectName("Dosing")
         self.tabs.addTab(dosing_tab, "Dosing")
 
-    def calculate_date_difference(self):
-        selected_date = self.date_edit.date().toPyDate()
-        today = datetime.today().date()
-        diff = (today - selected_date).days
-        self.date_diff_result.setText(f"{diff} days ago")
-
-    def calculate_date_addition(self):
-        start_date = self.date_add_edit.date().toPyDate()
-        try:
-            days_str = self.days_to_add.text()
-            if days_str:
-                days = int(days_str)
-            else:
-                days = 0
-            result_date = start_date + timedelta(days=days)
-            self.date_add_result.setText(f"{result_date.strftime('%Y-%m-%d')}")
-        except ValueError:
-            self.date_add_result.setText("Invalid number of days")
-        except OverflowError:
-            QMessageBox.critical(self, "Error", "The resulting date is out of range.")
-            self.days_to_add.setText("0")
-
-    def add_entry(self):
-        fill_date_edit = QDateEdit(calendarPopup=True)
-        fill_date_edit.setDisplayFormat('MM-dd-yyyy')
-        fill_date_edit.setDate(QDate.currentDate())
-        self.fill_dates.append(fill_date_edit)
-
-        days_supply_edit = QLineEdit()
-        days_supply_edit.setValidator(QIntValidator())
-        days_supply_edit.setFixedWidth(100)
-        self.days_supply.append(days_supply_edit)
-
-        row = len(self.fill_dates) + 1
-        self.grid_accumulation.addWidget(fill_date_edit, row, 0)
-        self.grid_accumulation.addWidget(days_supply_edit, row, 1)
-
-    def calculate_accumulation(self):
-        try:
-            total_days_supply = 0
-            today = datetime.today().date()
-            oldest_fill_date = today
-            for i in range(len(self.fill_dates)):
-                fill_date = self.fill_dates[i].date().toPyDate()
-                days_supply = int(self.days_supply[i].text())
-                total_days_supply += days_supply
-                if fill_date < oldest_fill_date:
-                    oldest_fill_date = fill_date
-            
-            days_since_oldest_fill = (today - oldest_fill_date).days
-            days_remaining = total_days_supply - days_since_oldest_fill
-            if days_remaining < 0:
-                days_remaining = 0
-            self.accumulation_result.setText(f"Total accumulated days: {days_remaining}")
-        except ValueError:
-            self.accumulation_result.setText("Invalid input")
-
     def calculate_dosing(self):
         try:
             weight = float(self.weight.text())
@@ -272,6 +277,7 @@ class PharmacistCalculator(QMainWindow):
         except ValueError:
             self.result_label_dosing.setText("Invalid input")
     
+    #Events
     def closeEvent(self, event):
         self.save_tab_order()
         event.accept()
