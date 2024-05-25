@@ -24,7 +24,7 @@ class PharmacistCalculator(QMainWindow):
         self.setWindowTitle("Pharmacist Calculator")
         self.setGeometry(100, 100, 800, 600)
 
-        self.settings = QSettings("MyCompany", "PharmacistCalculator")
+        self.settings = QSettings("TraxionRPh", "PharmacistCalculator")
         
         self.tabs = QTabWidget()
         self.tabs.setMovable(True)
