@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QDateEdit, QLineEdit, QPushButton, QScrollArea
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QDateEdit, QLineEdit, QPushButton, QScrollArea, QSizePolicy
 from PyQt6.QtCore import Qt, QDate
 from PyQt6.QtGui import QIntValidator
 from datetime import datetime
@@ -11,7 +11,11 @@ def create_accumulation_tab(parent):
     scroll_area.setWidgetResizable(True)
 
     container_widget = QWidget()
-    parent.grid = QGridLayout(container_widget)
+
+    container_layout = QVBoxLayout(container_widget)
+    container_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+
+    parent.grid = QGridLayout()
     parent.grid.setSpacing(10)
     parent.grid.setColumnStretch(1, 1)  
     parent.grid.addWidget(QLabel("Fill Date:"), 0, 0, Qt.AlignmentFlag.AlignTop)
@@ -22,7 +26,7 @@ def create_accumulation_tab(parent):
     parent.days_supply = []
     parent.remove_buttons = []
 
-    container_widget.setLayout(parent.grid)
+    container_layout.addLayout(parent.grid)
 
     scroll_area.setWidget(container_widget)
 
@@ -56,15 +60,19 @@ def add_entry(parent):
     fill_date_edit = QDateEdit(calendarPopup=True)
     fill_date_edit.setDisplayFormat('MM-dd-yyyy')
     fill_date_edit.setDate(QDate.currentDate())
+    fill_date_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+    fill_date_edit.setMinimumWidth(200)
     parent.fill_dates.append(fill_date_edit)
 
     days_supply_edit = QLineEdit()
     days_supply_edit.setValidator(QIntValidator())
-    days_supply_edit.setFixedWidth(100)
+    days_supply_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+    days_supply_edit.setMinimumWidth(100)
     parent.days_supply.append(days_supply_edit)
 
     remove_btn = QPushButton("x")
-    remove_btn.setFixedWidth(30)
+    remove_btn.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+    remove_btn.setMaximumWidth(30)
     remove_btn.clicked.connect(lambda: remove_entry(parent, fill_date_edit, days_supply_edit, remove_btn))
     parent.remove_buttons.append(remove_btn)
 
