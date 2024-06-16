@@ -11,9 +11,8 @@ class PharmacistCalculator(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Pharmacist Calculator")
-        self.setGeometry(100, 100, 800, 600)
-
         self.settings = QSettings("TraxionRPh", "PharmacistCalculator")
+        self.load_window_geometry()
 
         self.tabs = QTabWidget()
         self.tabs.setMovable(True)
@@ -21,6 +20,15 @@ class PharmacistCalculator(QMainWindow):
 
         self.load_tab_order()
         self.apply_stylesheet()
+    
+    def load_window_geometry(self):
+        if self.settings.contains("geometry"):
+            self.restoreGeometry(self.settings.value("geometry"))
+        else:
+            self.setGeometry(100, 100, 800, 600)
+    
+    def save_window_geometry(self):
+        self.settings.setValue("geometry", self.saveGeometry())
 
     def load_tab_order(self):
         try:
@@ -71,6 +79,7 @@ class PharmacistCalculator(QMainWindow):
 
     def closeEvent(self, event):
         self.save_tab_order()
+        self.save_window_geometry()
         event.accept()
 
     def calculate_date_difference(self):

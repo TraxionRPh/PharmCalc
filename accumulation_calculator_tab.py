@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QDateEdit, QLineEdit, QPushButton, QScrollArea, QSizePolicy
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QDateEdit, QLineEdit, QPushButton, QScrollArea, QSizePolicy, QHBoxLayout
 from PyQt6.QtCore import Qt, QDate
 from PyQt6.QtGui import QIntValidator
 from datetime import datetime
@@ -7,31 +7,42 @@ def create_accumulation_tab(parent):
     accumulation_tab = QWidget()
     layout = QVBoxLayout()
 
+    labels_layout = QHBoxLayout()
+    labels_layout.addWidget(QLabel("       Fill Date"))
+    labels_layout.addWidget(QLabel("Days Supply"))
+
+    layout.addLayout(labels_layout)
+
+    # Create a scroll area
     scroll_area = QScrollArea()
     scroll_area.setWidgetResizable(True)
 
+    # Create a container widget and set it as the scroll area's widget
     container_widget = QWidget()
-
+    
+    # Set the layout of the container widget to QVBoxLayout to align items to the top
     container_layout = QVBoxLayout(container_widget)
     container_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-
+    
+    # Create a grid layout for the entries
     parent.grid = QGridLayout()
     parent.grid.setSpacing(10)
-    parent.grid.setColumnStretch(1, 1)  
-    parent.grid.addWidget(QLabel("Fill Date:"), 0, 0, Qt.AlignmentFlag.AlignTop)
-    parent.grid.addWidget(QLabel("Days Supply:"), 0, 1, Qt.AlignmentFlag.AlignTop)
-    parent.grid.addWidget(QLabel(""), 0, 2)
+    parent.grid.addWidget(QLabel(""), 0, 2)  # Empty cell for the "x" button
 
     parent.fill_dates = []
     parent.days_supply = []
     parent.remove_buttons = []
 
+    # Add the grid layout to the container layout
     container_layout.addLayout(parent.grid)
 
+    # Set the container widget as the scroll area's widget
     scroll_area.setWidget(container_widget)
 
+    # Add the scroll area to the main layout
     layout.addWidget(scroll_area)
 
+    # Add buttons and result label below the scroll area
     buttons_layout = QGridLayout()
 
     parent.add_entry_btn = QPushButton("Add Entry")
@@ -51,10 +62,12 @@ def create_accumulation_tab(parent):
     accumulation_tab.setObjectName("Accumulation Calculator")
     parent.tabs.addTab(accumulation_tab, "Accumulation Calculator")
 
+    # Automatically add one initial entry
     add_entry(parent)
 
+    # Disable the remove button if only one entry exists initially
     if len(parent.fill_dates) == 1:
-        parent.remove_buttons[0].hide()
+        parent.remove_buttons[0].setEnabled(False)
 
 def add_entry(parent):
     fill_date_edit = QDateEdit(calendarPopup=True)
@@ -66,27 +79,29 @@ def add_entry(parent):
 
     days_supply_edit = QLineEdit()
     days_supply_edit.setValidator(QIntValidator())
-    days_supply_edit.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+    days_supply_edit.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Fixed)
     days_supply_edit.setMinimumWidth(100)
     parent.days_supply.append(days_supply_edit)
 
     remove_btn = QPushButton("x")
-    remove_btn.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
     remove_btn.setMaximumWidth(30)
+    remove_btn.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
     remove_btn.clicked.connect(lambda: remove_entry(parent, fill_date_edit, days_supply_edit, remove_btn))
     parent.remove_buttons.append(remove_btn)
 
-    row = len(parent.fill_dates)
-    parent.grid.addWidget(fill_date_edit, row, 0)
-    parent.grid.addWidget(days_supply_edit, row, 1)
+    row = len(parent.fill_dates) - 1
+    parent.grid.addWidget(fill_date_edit, row, 0, Qt.AlignmentFlag.AlignTop)  # Align to the top
+    parent.grid.addWidget(days_supply_edit, row, 1, Qt.AlignmentFlag.AlignTop)  # Align to the top
     parent.grid.addWidget(remove_btn, row, 2)
 
+    # Enable the remove button for the first entry if it's the only one
     if len(parent.fill_dates) == 1:
         remove_btn.setEnabled(False)
 
 def remove_entry(parent, fill_date_edit, days_supply_edit, remove_btn):
     index = parent.fill_dates.index(fill_date_edit)
 
+    # Ensure at least one entry remains
     if len(parent.fill_dates) > 1:
         parent.fill_dates.pop(index)
         parent.days_supply.pop(index)
@@ -101,14 +116,17 @@ def remove_entry(parent, fill_date_edit, days_supply_edit, remove_btn):
         parent.grid.removeWidget(remove_btn)
         remove_btn.deleteLater()
 
+        # Update remaining entries positions
         for i in range(index, len(parent.fill_dates)):
-            parent.grid.addWidget(parent.fill_dates[i], i + 1, 0)
-            parent.grid.addWidget(parent.days_supply[i], i + 1, 1)
+            parent.grid.addWidget(parent.fill_dates[i], i + 1, 0, Qt.AlignmentFlag.AlignTop)  # Align to the top
+            parent.grid.addWidget(parent.days_supply[i], i + 1, 1, Qt.AlignmentFlag.AlignTop)  # Align to the top
             parent.grid.addWidget(parent.remove_buttons[i], i + 1, 2)
 
+        # Disable remove button for the last entry if it's the only one left
         if len(parent.fill_dates) == 1:
             parent.remove_buttons[0].setEnabled(False)
     else:
+        # If only one entry left, disable remove button
         remove_btn.setEnabled(False)
 
 def calculate_accumulation(parent):
@@ -122,7 +140,7 @@ def calculate_accumulation(parent):
             total_days_supply += days_supply
             if fill_date < oldest_fill_date:
                 oldest_fill_date = fill_date
-
+        
         days_since_oldest_fill = (today - oldest_fill_date).days
         days_remaining = total_days_supply - days_since_oldest_fill
         if days_remaining < 0:
