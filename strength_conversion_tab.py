@@ -1,9 +1,12 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QLineEdit, QComboBox, QPushButton
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QLineEdit, QComboBox, QPushButton, QGroupBox, QHBoxLayout
 from PyQt6.QtGui import QIntValidator
 
 def create_strength_conversion_tab(parent):
     strength_conversion_tab = QWidget()
     layout = QVBoxLayout()
+
+    group_box = QGroupBox()
+    group_layout = QVBoxLayout(group_box)
 
     grid = QGridLayout()
     grid.addWidget(QLabel("ml per dose:"), 0, 0)
@@ -26,14 +29,18 @@ def create_strength_conversion_tab(parent):
     parent.new_strength.addItems(["125 mg/ml", "200 mg/ml", "250 mg/ml", "400 mg/ml", "500 mg/ml"])
     grid.addWidget(parent.new_strength, 3, 1)
 
+    button_layout = QHBoxLayout()
     parent.calculate_btn = QPushButton("Convert")
     parent.calculate_btn.clicked.connect(parent.calculate_strength_conversion)
-    grid.addWidget(parent.calculate_btn, 4, 0, 1, 2)
+    button_layout.addWidget(parent.calculate_btn)
+    button_layout.addStretch()  # Add stretchable space to push result_label to the right
+    grid.addLayout(button_layout, 4, 0, 1, 2)
 
     parent.result_label = QLabel("")
-    grid.addWidget(parent.result_label, 5, 0 , 1, 2)
+    grid.addWidget(parent.result_label, 5, 0, 1, 2)
 
-    layout.addLayout(grid)
+    group_layout.addLayout(grid)
+    layout.addWidget(group_box)
 
     strength_conversion_tab.setLayout(layout)
     strength_conversion_tab.setObjectName("Strength Conversion")
@@ -50,8 +57,8 @@ def calculate_strength_conversion(parent):
         new_mls_per_dose = total_mg / new_strength
         new_total_quantity = (total_quantity_prescribed * current_strength) / new_strength
 
-        result_text = f"New ml per dose {new_mls_per_dose:.2f}\n"
-        result_text +=f"New total quantity: {new_total_quantity:.2f} ml"
+        result_text = f"New ml per dose: {new_mls_per_dose:.2f}\n"
+        result_text += f"New total quantity: {new_total_quantity:.2f} ml"
         parent.result_label.setText(result_text)
     except ValueError:
         parent.result_label.setText("Invalid input")

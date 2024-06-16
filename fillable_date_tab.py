@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QDateEdit, QLineEdit, QMessageBox
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QDateEdit, QLineEdit, QMessageBox, QGroupBox
 from PyQt6.QtCore import QDate
 from PyQt6.QtGui import QIntValidator
 from datetime import timedelta
@@ -7,34 +7,39 @@ def create_fillable_tab(parent):
     fillable_tab = QWidget()
     layout = QVBoxLayout()
 
-    grid_addition = QGridLayout()
-    grid_addition.setSpacing(10)
-    grid_addition.addWidget(QLabel("Select the fill date:"), 0, 0, 1, 2)
+    group_box = QGroupBox()
+    group_layout = QGridLayout()
 
+    group_layout.addWidget(QLabel("Select the fill date:"), 0, 0)
     parent.date_add_edit = QDateEdit(calendarPopup=True)
     parent.date_add_edit.setDisplayFormat('MM-dd-yyyy')
     parent.date_add_edit.setDate(QDate.currentDate())
     parent.date_add_edit.setMaximumDate(QDate.currentDate().addDays(365))
     parent.date_add_edit.setMinimumDate(QDate.currentDate().addDays(-365))
     parent.date_add_edit.dateChanged.connect(parent.calculate_date_addition)
-    parent.date_add_edit.setFixedWidth(200)
-    grid_addition.addWidget(parent.date_add_edit, 1, 0, 1, 2)
+    group_layout.addWidget(parent.date_add_edit, 0, 1)
 
-    grid_addition.addWidget(QLabel("Number of days to add:"), 2, 0)
+    group_layout.addWidget(QLabel("Number of days to add:"), 1, 0)
     parent.days_to_add = QLineEdit("0")
     parent.days_to_add.setValidator(QIntValidator())
     parent.days_to_add.textChanged.connect(parent.calculate_date_addition)
-    parent.days_to_add.setFixedWidth(100)
-    grid_addition.addWidget(parent.days_to_add, 2, 1)
+    group_layout.addWidget(parent.days_to_add, 1, 1)
 
+    # Resulting date label aligned with the input fields
+    group_layout.addWidget(QLabel("Resulting date:"), 2, 0)
     parent.date_add_result = QLabel("")
-    grid_addition.addWidget(parent.date_add_result, 3, 0, 1, 2)
+    group_layout.addWidget(parent.date_add_result, 2, 1)
 
-    layout.addLayout(grid_addition)
+    # Stretch the last row to fill any extra space
+    group_layout.setRowStretch(3, 1)
+
+    group_box.setLayout(group_layout)
+    layout.addWidget(group_box)
 
     fillable_tab.setLayout(layout)
     fillable_tab.setObjectName("Fillable Date")
     parent.tabs.addTab(fillable_tab, "Fillable Date")
+
 
 def calculate_date_addition(parent):
     start_date = parent.date_add_edit.date().toPyDate()
