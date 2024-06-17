@@ -96,7 +96,7 @@ def add_entry(parent):
 
     # Enable the remove button for the first entry if it's the only one
     if len(parent.fill_dates) == 1:
-        remove_btn.setEnabled(False)
+        remove_btn.hide()
 
 def remove_entry(parent, fill_date_edit, days_supply_edit, remove_btn):
     index = parent.fill_dates.index(fill_date_edit)
@@ -124,10 +124,10 @@ def remove_entry(parent, fill_date_edit, days_supply_edit, remove_btn):
 
         # Disable remove button for the last entry if it's the only one left
         if len(parent.fill_dates) == 1:
-            parent.remove_buttons[0].setEnabled(False)
+            parent.remove_buttons[0].hide()
     else:
         # If only one entry left, disable remove button
-        remove_btn.setEnabled(False)
+        remove_btn.hide()
 
 def calculate_accumulation(parent):
     try:
