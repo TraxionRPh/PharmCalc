@@ -13,7 +13,7 @@ class PharmacistCalculator(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Pharmacist Calculator")
-        self.setWindowIcon(QIcon("C:/Users/Griff/OneDrive/Documents/PythonProjects/PharmCalc/icon.png"))
+        self.setWindowIcon(QIcon("C:\GitProjects\PharmCalc\icon.png"))
         self.settings = QSettings("TraxionRPh", "PharmacistCalculator")
         self.load_window_geometry()
 
