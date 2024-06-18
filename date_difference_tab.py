@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QDateEdit, QGroupBox, QHBoxLayout
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QDateEdit, QGroupBox, QHBoxLayout
 from PyQt6.QtCore import QDate, Qt
 from datetime import datetime
 
@@ -34,7 +34,7 @@ def create_date_difference_tab(parent):
     layout.addWidget(group_box)
 
     date_difference_tab.setLayout(layout)
-    date_difference_tab.setObjectName("DateDifferenceTab")
+    date_difference_tab.setObjectName("Date Difference")
     parent.tabs.addTab(date_difference_tab, "Date Difference")
 
 def calculate_date_difference(parent):
