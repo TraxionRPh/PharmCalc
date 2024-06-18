@@ -2,7 +2,7 @@
 
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget
-from PyQt6.QtGui import QAction, QIcon, QKeyEvent
+from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import QSettings
 from date_difference_tab import create_date_difference_tab, calculate_date_difference
 from fillable_date_tab import create_fillable_tab, calculate_date_addition
