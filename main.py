@@ -1,3 +1,5 @@
+#pyinstaller --onefile --icon=icon.ico -n PharmCalc --noconsole main.py
+
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget
 from PyQt6.QtGui import QAction, QIcon
