@@ -1,29 +1,32 @@
 import requests
-import zipfile
 import os
+import subprocess
 
 APP_VERSION = '1.0.0'
-UPDATE_CHECK_URL = 'http://24.101.0.106:6969/check-update'
-UPDATE_DOWNLOAD_DIR = '/update.zip'
+VERSION_CHECK_URL = 'https://raw.githubusercontent.com/TraxionRPh/PharmCalc/main/CurrentVersion/CURRENT_VERSION.txt'
+UPDATE_INSTALLER_URL = 'https://raw.githubusercontent.com/TraxionRPh/PharmCalc/main/CurrentVersion/PharmCalcInstaller.exe'
+UPDATE_DOWNLOAD_DIR = './downloads'
+INSTALLER_PATH = os.path.join(UPDATE_DOWNLOAD_DIR, 'PharmCalcInstaller.exe')
 
 def check_for_update():
-    response = requests.get(UPDATE_CHECK_URL)
+    response = requests.get(VERSION_CHECK_URL)
     if response.status_code == 200:
-        data = response.json()
-        if data['version'] > APP_VERSION:
-            return data['url']
+        latest_version = response.text.strip()
+        if latest_version > APP_VERSION:
+            return UPDATE_INSTALLER_URL
     return None
 
-def download_update(url, download_dir):
+def download_installer(url, download_dir):
     response = requests.get(url, stream=True)
     os.makedirs(download_dir, exist_ok=True)
-    zip_path = os.path.join(download_dir, 'update.zip')
-    with open(zip_path, 'wb') as f:
+    installer_path = os.path.join(download_dir, 'PharmCalcInstaller.exe')
+    with open(installer_path, 'wb') as f:
         for chunk in response.iter_content(chunk_size=8192):
             f.write(chunk)
-        return zip_path
+    return installer_path
 
-def apply_update(zip_path, install_dir):
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(install_dir)
-    os.remove(zip_path)
+def run_installer(installer_path):
+    try:
+        subprocess.run([installer_path, '/S'], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f'Error running installer: {e}')
