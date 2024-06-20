@@ -1,7 +1,7 @@
 #pyinstaller --onefile --icon=icon.ico -n PharmCalc --noconsole main.py
-
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget
+import datetime
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QMessageBox
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import QSettings
 from date_difference_tab import create_date_difference_tab, calculate_date_difference
@@ -10,6 +10,7 @@ from accumulation_calculator_tab import create_accumulation_tab, add_entry, calc
 from dosing_tab import create_dosing_tab, calculate_dosing
 from strength_conversion_tab import create_strength_conversion_tab, calculate_strength_conversion
 from drop_calculator_tab import create_drop_calculator_tab, calculate_days_supply
+from update import check_for_update, download_update, apply_update
 
 class PharmacistCalculator(QMainWindow):
     def __init__(self):
@@ -18,6 +19,8 @@ class PharmacistCalculator(QMainWindow):
         self.setWindowIcon(QIcon("C:\GitProjects\PharmCalc\icon.png"))
         self.settings = QSettings("TraxionRPh", "PharmacistCalculator")
         self.load_window_geometry()
+
+        self.run_daily_update()
 
         self.tabs = QTabWidget()
         self.tabs.setMovable(True)
@@ -35,6 +38,29 @@ class PharmacistCalculator(QMainWindow):
         self.create_menu_bar()
         self.load_tab_order()
         self.apply_stylesheet()
+    
+    def run_daily_update(self):
+        last_update_date_str = self.settings.value("last_update_date")
+        last_update_date = datetime.datetime.strptime(last_update_date_str, "%Y-%m-%d") if last_update_date_str else None
+        current_date = datetime.datetime.now().date()
+
+        if not last_update_date or last_update_date.date() < current_date:
+            self.execute_update_script()
+            self.settings.setValue("last_update_date", current_date.strftime("%Y-%m-%d"))
+
+    def execute_update_script(self):
+        update_url = check_for_update()
+        if update_url:
+            try:
+                print("New version available. Downloading...")
+                zip_path = download_update(update_url, './downloads')
+                print("Applying update...")
+                apply_update(zip_path, './')
+                print("Update applied successfully.")
+            except Exception as e:
+                QMessageBox.critical(self, "Update Error", f"Failed to apply update: {e}")
+        else:
+            print("No update available.")
 
     def create_menu_bar(self):
         menu_bar = self.menuBar()
