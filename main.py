@@ -3,14 +3,14 @@ import sys
 import datetime
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QMessageBox
 from PyQt6.QtGui import QAction, QIcon
-from PyQt6.QtCore import QSettings, QTimer
+from PyQt6.QtCore import QSettings
 from date_difference_tab import create_date_difference_tab, calculate_date_difference
 from fillable_date_tab import create_fillable_tab, calculate_date_addition
 from accumulation_calculator_tab import create_accumulation_tab, add_entry, calculate_accumulation
 from dosing_tab import create_dosing_tab, calculate_dosing
 from strength_conversion_tab import create_strength_conversion_tab, calculate_strength_conversion
 from drop_calculator_tab import create_drop_calculator_tab, calculate_days_supply
-from update import UpdateManager, APP_VERSION
+from update import check_for_update, download_installer, run_installer, APP_VERSION
 
 class PharmacistCalculator(QMainWindow):
     def __init__(self):
@@ -21,6 +21,8 @@ class PharmacistCalculator(QMainWindow):
         self.setWindowIcon(QIcon("C:/Users/Griff/OneDrive/Documents/PythonProjects/PharmCalc/icon.png"))
         self.settings = QSettings("TraxionRPh", "PharmacistCalculator")
         self.load_window_geometry()
+
+        self.run_daily_update()
 
         self.tabs = QTabWidget()
         self.tabs.setMovable(True)
@@ -38,11 +40,37 @@ class PharmacistCalculator(QMainWindow):
         self.create_menu_bar()
         self.load_tab_order()
         self.apply_stylesheet()
+    
+    def run_daily_update(self):
+        last_update_check_str = self.settings.value("last_update_check")
+        last_update_check = datetime.datetime.strptime(last_update_check_str, "%Y-%m-%d") if last_update_check_str else None
+        current_date = datetime.datetime.now().date()
 
-        self.update_manager = UpdateManager()
-        self.update_manager.update_available.connect(self.prompt_update)
-        self.update_manager.check_for_update()
-        self.setup_update_check_timer()
+        if not last_update_check or last_update_check.date() < current_date:
+            self.execute_update_script()
+            self.settings.setValue("last_update_check", current_date.strftime("%Y-%m-%d"))
+
+    def execute_update_script(self):
+        update_url = check_for_update()
+        if update_url:
+            reply = QMessageBox.question(self, 'Update Available',
+                                        'A new update is available. Do you want to update now?',
+                                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            if reply == QMessageBox.StandardButton.Yes:
+                try:
+                    print("Downloading update...")
+                    installer_path = download_installer(update_url, './downloads')
+                    print("Applying update...")
+                    run_installer(installer_path)
+                    print("Update applied successfully.")
+                    # Close the application after update
+                    sys.exit(0)
+                except Exception as e:
+                    QMessageBox.critical(self, "Update Error", f"Failed to apply update: {e}")
+            else:
+                print("Update declined by user.")
+        else:
+            print("No update available.")
 
     def create_menu_bar(self):
         menu_bar = self.menuBar()
@@ -144,18 +172,6 @@ class PharmacistCalculator(QMainWindow):
             self.settings.setValue(f"tab_visible_{tab_name}", action.isChecked())
         event.accept()
 
-    def prompt_update(self, update_available):
-        if update_available:
-            msg_box = QMessageBox(self)
-            msg_box.setWindowTitle("Update Available")
-            msg_box.setText("A new version of PharmCalc is available. Do you want to update now?")
-            msg_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-            msg_box.setDefaultButton(QMessageBox.StandardButton.Yes)
-            answer = msg_box.exec()
-
-            if answer == QMessageBox.StandardButton.Yes:
-                self.update_manager.download_and_apply_update()
-
     def calculate_date_difference(self):
         calculate_date_difference(self)
     
@@ -176,11 +192,6 @@ class PharmacistCalculator(QMainWindow):
     
     def calculate_days_supply(self):
         calculate_days_supply(self)
-
-    def setup_update_check_timer(self):
-        timer = QTimer(self)
-        timer.timeout.connect(self.update_manager.check_for_update)
-        timer.start(24 * 60 * 60 * 1000)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

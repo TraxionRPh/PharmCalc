@@ -21,12 +21,12 @@ def create_strength_conversion_tab(parent):
 
     grid.addWidget(QLabel("Current Strength (mg/ml):"), 2, 0)
     parent.current_strength = QComboBox()
-    parent.current_strength.addItems(["125 mg/ml", "200 mg/ml", "250 mg/ml", "400 mg/ml", "500 mg/ml"])
+    parent.current_strength.addItems(["100 mg/ml", "125 mg/ml", "200 mg/ml", "250 mg/ml", "400 mg/ml", "500 mg/ml"])
     grid.addWidget(parent.current_strength, 2, 1)
 
     grid.addWidget(QLabel("New Strength (mg/ml):"), 3, 0)
     parent.new_strength = QComboBox()
-    parent.new_strength.addItems(["125 mg/ml", "200 mg/ml", "250 mg/ml", "400 mg/ml", "500 mg/ml"])
+    parent.new_strength.addItems(["100 mg/ml", "125 mg/ml", "200 mg/ml", "250 mg/ml", "400 mg/ml", "500 mg/ml"])
     grid.addWidget(parent.new_strength, 3, 1)
 
     button_layout = QHBoxLayout()
