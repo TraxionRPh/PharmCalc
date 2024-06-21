@@ -2,6 +2,7 @@ import requests
 import os
 import subprocess
 import psutil
+import time
 
 APP_VERSION = '1.4'
 VERSION_CHECK_URL = f'https://raw.githubusercontent.com/TraxionRPh/PharmCalc/main/CurrentVersion/CURRENT_VERSION.txt?token={APP_VERSION}'
@@ -29,15 +30,18 @@ def download_installer(url, download_dir):
 def terminate_processes_by_name(name):
     for proc in psutil.process_iter(['pid', 'name']):
         if proc.info['name'] == name:
-            proc.terminate()
             try:
+                proc.terminate()
                 proc.wait(timeout=5)
             except psutil.TimeoutExpired:
                 proc.kill()
+            except psutil.NoSuchProcess:
+                continue
 
 def run_installer(installer_path):
     try:
         terminate_processes_by_name('PharmCalc.exe')
+        time.sleep(5)
         subprocess.Popen([installer_path, '/VERYSILENT', '/NORESTART'])
         os._exit(0)
     except subprocess.CalledProcessError as e:
