@@ -10,7 +10,7 @@ from accumulation_calculator_tab import create_accumulation_tab, add_entry, calc
 from dosing_tab import create_dosing_tab, calculate_dosing
 from strength_conversion_tab import create_strength_conversion_tab, calculate_strength_conversion
 from drop_calculator_tab import create_drop_calculator_tab, calculate_days_supply
-from update import check_for_update, download_installer, run_installer
+from update import check_for_update, download_installer, run_installer, APP_VERSION
 
 class PharmacistCalculator(QMainWindow):
     def __init__(self):
@@ -66,8 +66,8 @@ class PharmacistCalculator(QMainWindow):
 
     def create_menu_bar(self):
         menu_bar = self.menuBar()
-        view_menu = menu_bar.addMenu("View")
 
+        view_menu = menu_bar.addMenu("View")
         self.tab_actions = {}
         for tab_name in self.available_tabs.keys():
             action = QAction(tab_name, self, checkable=True)
@@ -75,6 +75,15 @@ class PharmacistCalculator(QMainWindow):
             action.triggered.connect(self.toggle_tab)
             view_menu.addAction(action)
             self.tab_actions[tab_name] = action
+        
+        help_menu = menu_bar.addMenu("Help")
+        about_action = QAction("About", self)
+        about_action.triggered.connect(self.show_about_dialog)
+        help_menu.addAction(about_action)
+    
+    def show_about_dialog(self):
+        QMessageBox.about(self, "About Pharmacist Calculator",
+                        f"Pharmacist Calculator\nVersion {APP_VERSION}\n\nDeveloped by TraxionRPh")
     
     def toggle_tab(self):
         action = self.sender()
