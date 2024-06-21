@@ -2,7 +2,7 @@ import requests
 import os
 import subprocess
 
-APP_VERSION = '1.2'
+APP_VERSION = '1.3'
 VERSION_CHECK_URL = 'https://raw.githubusercontent.com/TraxionRPh/PharmCalc/main/CurrentVersion/CURRENT_VERSION.txt?token=$(date%20+%s)'
 UPDATE_INSTALLER_URL = 'https://raw.githubusercontent.com/TraxionRPh/PharmCalc/main/CurrentVersion/PharmCalcInstaller.exe?token=$(date%20+%s)'
 UPDATE_DOWNLOAD_DIR = './downloads'
