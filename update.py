@@ -2,7 +2,7 @@ import requests
 import os
 import subprocess
 
-APP_VERSION = '1.1'
+APP_VERSION = '1.2'
 VERSION_CHECK_URL = 'https://raw.githubusercontent.com/TraxionRPh/PharmCalc/main/CurrentVersion/CURRENT_VERSION.txt'
 UPDATE_INSTALLER_URL = 'https://raw.githubusercontent.com/TraxionRPh/PharmCalc/main/CurrentVersion/PharmCalcInstaller.exe'
 UPDATE_DOWNLOAD_DIR = './downloads'
@@ -27,6 +27,6 @@ def download_installer(url, download_dir):
 
 def run_installer(installer_path):
     try:
-        subprocess.run([installer_path, '/S'], check=True)
+        subprocess.run([installer_path, '/VERYSILENT', '/NORESTART'], check=True)
     except subprocess.CalledProcessError as e:
         print(f'Error running installer: {e}')
