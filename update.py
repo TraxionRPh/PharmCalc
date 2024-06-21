@@ -51,7 +51,7 @@ def run_installer(installer_path):
             print("Failed to terminate all processes. Aborting update.")
             return
         print("Running installer...")
-        subprocess.Popen([installer_path, '/VERYSILENT', '/NORESTART'])
+        subprocess.Popen([installer_path, '/SILENT', '/NORESTART'])
         os._exit(0)
     except subprocess.CalledProcessError as e:
         print(f'Error running installer: {e}')
