@@ -4,7 +4,7 @@ import subprocess
 import psutil
 from PyQt6.QtWidgets import QApplication
 
-APP_VERSION = '0.4'
+APP_VERSION = '1.0'
 VERSION_CHECK_URL = f'https://raw.githubusercontent.com/TraxionRPh/PharmCalc/main/CurrentVersion/CURRENT_VERSION.txt?token={APP_VERSION}'
 UPDATE_INSTALLER_URL = f'https://raw.githubusercontent.com/TraxionRPh/PharmCalc/main/CurrentVersion/PharmCalcInstaller.exe?token={APP_VERSION}'
 UPDATE_DOWNLOAD_DIR = './downloads'

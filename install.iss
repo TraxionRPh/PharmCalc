@@ -1,6 +1,6 @@
 [Setup]
 AppName=PharmCalc
-AppVersion=0.5
+AppVersion=1.0
 DefaultDirName={localappdata}\PharmCalc
 DefaultGroupName=PharmCalc
 OutputDir=./CurrentVersion
