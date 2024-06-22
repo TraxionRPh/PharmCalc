@@ -39,7 +39,6 @@ class PharmacistCalculator(QMainWindow):
 
         self.create_menu_bar()
         self.load_tab_order()
-        self.apply_stylesheet()
     
     def run_daily_update(self):
         last_update_check_str = self.settings.value("last_update_check")
@@ -158,28 +157,6 @@ class PharmacistCalculator(QMainWindow):
     def save_tab_order(self):
         tab_order = [self.tabs.tabText(i) for i in range(self.tabs.count())]
         self.settings.setValue("tab_order", tab_order)
-    
-    def apply_stylesheet(self):
-        self.setStyleSheet("""
-            QWidget {
-                font-size: 14px;
-            }
-            QLabel {
-                font-size: 14px;
-            }
-            QLineEdit {
-                font-size: 14px;
-            }
-            QDateEdit {
-                font-size: 14px;
-            }
-            QComboBox {
-                font-size: 14px;
-            }
-            QPushButton {
-                font-size: 14px;
-            }
-        """)
 
     def closeEvent(self, event):
         self.save_tab_order()
