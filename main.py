@@ -99,14 +99,34 @@ class PharmacistCalculator(QMainWindow):
             view_menu.addAction(action)
             self.tab_actions[tab_name] = action
         
-        help_menu = menu_bar.addMenu("Help")
-        about_action = QAction("About", self)
-        about_action.triggered.connect(self.show_about_dialog)
-        help_menu.addAction(about_action)
+        help_action = QAction("Help", self)
+        help_action.triggered.connect(self.show_help)
+        menu_bar.addAction(help_action)
+
+        # Add "About" action directly to the menu bar
+        about_action = QAction('About', self)
+        about_action.triggered.connect(self.show_about)
+        menu_bar.addAction(about_action)
+
+    def show_help(self):
+        # Create the help information using HTML for rich text formatting
+        help_text = """
+        <h2>Help Information</h2>
+        <p><b>Tab 1:</b> This tab does X.</p>
+        <p><b>Tab 2:</b> This tab does Y.</p>
+        <p><b>Tab 3:</b> This tab does Z.</p>
+        """
+
+        # Show the help information in a QMessageBox with rich text
+        QMessageBox.information(self, 'Help', help_text, QMessageBox.StandardButton.Ok)
     
-    def show_about_dialog(self):
-        QMessageBox.about(self, "About Pharmacist Calculator",
-                        f"Pharmacist Calculator\nVersion {APP_VERSION}\n\nDeveloped by TraxionRPh")
+    def show_about(self):
+        about_text = (
+            "PharmCalc\n"
+            f"Version {APP_VERSION}\n\n"
+            "Developed by TraxionRPh"
+        )
+        QMessageBox.about(self, "About PharmCalc", about_text)
     
     def toggle_tab(self):
         action = self.sender()
