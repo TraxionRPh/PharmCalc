@@ -1,6 +1,7 @@
 #pyinstaller --onefile --icon=icon.ico -n PharmCalc --noconsole main.py
 import sys
 import datetime
+import subprocess
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QMessageBox, QProgressDialog
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import QSettings, Qt
@@ -109,16 +110,8 @@ class PharmacistCalculator(QMainWindow):
         menu_bar.addAction(about_action)
 
     def show_help(self):
-        # Create the help information using HTML for rich text formatting
-        help_text = """
-        <h2>Help Information</h2>
-        <p><b>Tab 1:</b> This tab does X.</p>
-        <p><b>Tab 2:</b> This tab does Y.</p>
-        <p><b>Tab 3:</b> This tab does Z.</p>
-        """
-
-        # Show the help information in a QMessageBox with rich text
-        QMessageBox.information(self, 'Help', help_text, QMessageBox.StandardButton.Ok)
+        help_file = './Help/PharmCalc.chm'
+        subprocess.run(['hh.exe', help_file])
     
     def show_about(self):
         about_text = (
