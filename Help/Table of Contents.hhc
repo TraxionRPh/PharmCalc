@@ -16,5 +16,25 @@
 		<param name="Name" value="Date Difference">
 		<param name="Local" value="DateDifferenceTab.html">
 		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Accumulation Calculator">
+		<param name="Local" value="AccumulationCalculatorTab.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Dosing">
+		<param name="Local" value="DosingTab.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Drop Days Supply Calculator">
+		<param name="Local" value="DropDaysSupplyCalculaterTab.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Fillable Date">
+		<param name="Local" value="FillableDateTab.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Strength Conversion">
+		<param name="Local" value="StrengthConversionTab.html">
+		</OBJECT>
 </UL>
 </BODY></HTML>

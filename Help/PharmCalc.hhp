@@ -2,6 +2,7 @@
 Compatibility=1.1 or later
 Compiled file=PharmCalc.chm
 Contents file=Table of Contents.hhc
+Default topic=DateDifferenceTab.html
 Display compile progress=No
 Language=0x409 English (United States)
 
@@ -9,6 +10,11 @@ Language=0x409 English (United States)
 [FILES]
 DateDifferenceTab.html
 index.html
+AccumulationCalculatorTab.html
+DosingTab.html
+DropDaysSupplyCalculaterTab.html
+FillableDateTab.html
+StrengthConversionTab.html
 
 [INFOTYPES]
 
