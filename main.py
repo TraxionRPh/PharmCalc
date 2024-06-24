@@ -7,10 +7,11 @@ from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import QSettings, Qt
 from date_difference_tab import create_date_difference_tab, calculate_date_difference
 from fillable_date_tab import create_fillable_tab, calculate_date_addition
-from accumulation_calculator_tab import create_accumulation_tab, add_entry, calculate_accumulation
+from accumulation_calculator_tab import create_accumulation_tab
 from dosing_tab import create_dosing_tab, calculate_dosing
 from strength_conversion_tab import create_strength_conversion_tab, calculate_strength_conversion
 from drop_calculator_tab import create_drop_calculator_tab, calculate_days_supply
+from taper_tab import create_taper_tab
 from update import check_for_update, download_installer_with_progress, run_installer, APP_VERSION
 
 class PharmacistCalculator(QMainWindow):
@@ -35,7 +36,8 @@ class PharmacistCalculator(QMainWindow):
             "Accumulation Calculator": create_accumulation_tab,
             "Dosing": create_dosing_tab,
             "Strength Conversion": create_strength_conversion_tab,
-            "Drops Days Supply Calculator": create_drop_calculator_tab
+            "Drops Days Supply Calculator": create_drop_calculator_tab,
+            "Taper": create_taper_tab
         }
 
         self.create_menu_bar()
@@ -143,7 +145,7 @@ class PharmacistCalculator(QMainWindow):
     
     def load_tab_order(self):
         try:
-            tab_order = self.settings.value("tab_order", [])
+            tab_order = self.settings.value("tab_order", [], type=list)
             loaded_tabs = set()
 
             for tab_name in tab_order:
@@ -163,7 +165,8 @@ class PharmacistCalculator(QMainWindow):
                     else:
                         self.tab_actions[tab_name].setChecked(False)
         
-        except TypeError:
+        except TypeError as e:
+            print(f"Error loading tab order: {e}")
             for create_function in self.available_tabs.values():
                 create_function(self)
 
@@ -183,12 +186,6 @@ class PharmacistCalculator(QMainWindow):
     
     def calculate_date_addition(self):
         calculate_date_addition(self)
-
-    def add_entry(self):
-        add_entry(self)
-
-    def calculate_accumulation(self):
-        calculate_accumulation(self)
 
     def calculate_dosing(self):
         calculate_dosing(self)
