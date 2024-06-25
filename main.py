@@ -19,8 +19,8 @@ class PharmacistCalculator(QMainWindow):
         super().__init__()
         self.setWindowTitle("Pharmacist Calculator")
         # Uncomment directory based on work station, relative paths dont work for whatever reason
-        #self.setWindowIcon(QIcon("C:/GitProjects/PharmCalc/icon.png"))
-        self.setWindowIcon(QIcon("C:/Users/Griff/OneDrive/Documents/PythonProjects/PharmCalc/icon.png"))
+        self.setWindowIcon(QIcon("C:/GitProjects/PharmCalc/icon.png"))
+        #self.setWindowIcon(QIcon("C:/Users/Griff/OneDrive/Documents/PythonProjects/PharmCalc/icon.png"))
         self.settings = QSettings("TraxionRPh", "PharmacistCalculator")
         self.load_window_geometry()
 
