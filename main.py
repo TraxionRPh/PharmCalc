@@ -72,17 +72,9 @@ class PharmacistCalculator(QMainWindow):
                     progress_dialog_download.setAutoClose(True)
 
                     installer_path = download_installer_with_progress(update_url, './downloads', progress_dialog_download)
-                    #progress_dialog_download.close()
                     if installer_path:
 
-                        progress_dialog_apply = QProgressDialog("Applying update...", "Cancel", 0, 0, self)
-                        progress_dialog_apply.setWindowModality(Qt.WindowModality.WindowModal)
-                        progress_dialog_apply.setMinimumDuration(0)
-                        progress_dialog_apply.setCancelButton(None)
-                        progress_dialog_apply.setAutoClose(True)
-
                         run_installer(installer_path)
-                        progress_dialog_apply.close()
 
                         print("Update applied successfully.")
                         sys.exit(0)
