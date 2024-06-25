@@ -40,8 +40,13 @@ class PharmacistCalculator(QMainWindow):
             "Taper": create_taper_tab
         }
 
+        self.update_available = self.check_for_update_on_startup()
         self.create_menu_bar()
         self.load_tab_order()
+    
+    def check_for_update_on_startup(self):
+        update_url = check_for_update()
+        return update_url is not None
     
     def run_daily_update(self):
         last_update_check_str = self.settings.value("last_update_check")
@@ -110,6 +115,11 @@ class PharmacistCalculator(QMainWindow):
         about_action = QAction('About', self)
         about_action.triggered.connect(self.show_about)
         menu_bar.addAction(about_action)
+
+        if self.update_available:
+            update_action = QAction("Update", self)
+            update_action.triggered.connect(self.execute_update_script)
+            menu_bar.addAction(update_action)
 
     def show_help(self):
         help_file = './Help/PharmCalc.chm'
