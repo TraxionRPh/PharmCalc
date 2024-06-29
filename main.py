@@ -5,12 +5,12 @@ import subprocess
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QMessageBox, QProgressDialog
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import QSettings, Qt
-from date_difference_tab import create_date_difference_tab, calculate_date_difference
-from fillable_date_tab import create_fillable_tab, calculate_date_addition
+from date_difference_tab import create_date_difference_tab
+from fillable_date_tab import create_fillable_tab
 from accumulation_calculator_tab import create_accumulation_tab
-from dosing_tab import create_dosing_tab, calculate_dosing
-from strength_conversion_tab import create_strength_conversion_tab, calculate_strength_conversion
-from drop_calculator_tab import create_drop_calculator_tab, calculate_days_supply
+from dosing_tab import create_dosing_tab
+from strength_conversion_tab import create_strength_conversion_tab
+from drop_calculator_tab import create_drop_calculator_tab
 from taper_tab import create_taper_tab
 from update import check_for_update, download_installer_with_progress, run_installer, APP_VERSION
 
@@ -183,20 +183,6 @@ class PharmacistCalculator(QMainWindow):
             self.settings.setValue(f"tab_visible_{tab_name}", action.isChecked())
         event.accept()
 
-    def calculate_date_difference(self):
-        calculate_date_difference(self)
-    
-    def calculate_date_addition(self):
-        calculate_date_addition(self)
-
-    def calculate_dosing(self):
-        calculate_dosing(self)
-
-    def calculate_strength_conversion(self):
-        calculate_strength_conversion(self)
-    
-    def calculate_days_supply(self):
-        calculate_days_supply(self)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

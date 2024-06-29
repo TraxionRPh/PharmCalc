@@ -1,7 +1,10 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLabel, QDateEdit, QLineEdit, QPushButton, QScrollArea, QSizePolicy, QHBoxLayout
+from PyQt6.QtWidgets import (
+    QWidget, QVBoxLayout, QGridLayout, QLabel, QDateEdit, QLineEdit,
+    QPushButton, QScrollArea, QSizePolicy, QHBoxLayout
+)
 from PyQt6.QtCore import Qt, QDate
-from PyQt6.QtGui import QIntValidator
-from datetime import datetime
+from PyQt6.QtGui import QIntValidator, QFont
+from datetime import datetime  # Import datetime module
 
 class AccumulationTab(QWidget):
     def __init__(self, parent=None):
@@ -14,8 +17,15 @@ class AccumulationTab(QWidget):
     def init_ui(self):
         layout = QVBoxLayout()
         labels_layout = QHBoxLayout()
-        labels_layout.addWidget(QLabel("       Fill Date"))
-        labels_layout.addWidget(QLabel("Days Supply"))
+        
+        label_fill_date = QLabel("Fill Date")
+        label_fill_date.setFont(QFont("Arial", weight=QFont.Weight.Bold))
+        labels_layout.addWidget(label_fill_date)
+        
+        label_days_supply = QLabel("Days Supply")
+        label_days_supply.setFont(QFont("Arial", weight=QFont.Weight.Bold))
+        labels_layout.addWidget(label_days_supply)
+        
         layout.addLayout(labels_layout)
 
         scroll_area = QScrollArea()
@@ -33,14 +43,16 @@ class AccumulationTab(QWidget):
         scroll_area.setWidget(container_widget)
         layout.addWidget(scroll_area)
 
-        buttons_layout = QGridLayout()
+        buttons_layout = QHBoxLayout()
         self.add_entry_btn = QPushButton("Add Entry")
+        self.add_entry_btn.setStyleSheet("QPushButton { background-color: #2196F3; color: white; }")
         self.add_entry_btn.clicked.connect(self.add_entry)
-        buttons_layout.addWidget(self.add_entry_btn, 0, 0)
+        buttons_layout.addWidget(self.add_entry_btn)
 
         self.calculate_btn = QPushButton("Calculate")
+        self.calculate_btn.setStyleSheet("QPushButton { background-color: #4CAF50; color: white; }")
         self.calculate_btn.clicked.connect(self.calculate_accumulation)
-        buttons_layout.addWidget(self.calculate_btn, 0, 1)
+        buttons_layout.addWidget(self.calculate_btn)
         layout.addLayout(buttons_layout)
 
         self.accumulation_result = QLabel("")
@@ -66,6 +78,7 @@ class AccumulationTab(QWidget):
         remove_btn = QPushButton("x")
         remove_btn.setMaximumWidth(30)
         remove_btn.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        remove_btn.setStyleSheet("QPushButton { background-color: #f44336; color: white; }")
         remove_btn.clicked.connect(lambda: self.remove_entry(fill_date_edit, days_supply_edit, remove_btn))
         self.remove_buttons.append(remove_btn)
 
@@ -107,7 +120,7 @@ class AccumulationTab(QWidget):
     def calculate_accumulation(self):
         try:
             total_days_supply = 0
-            today = datetime.today().date()
+            today = datetime.today().date()  # Using datetime module here
             oldest_fill_date = today
             for i in range(len(self.fill_dates)):
                 fill_date = self.fill_dates[i].date().toPyDate()
