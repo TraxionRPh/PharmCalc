@@ -1,8 +1,8 @@
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QGridLayout, QLabel, QLineEdit, QPushButton, QScrollArea, QSizePolicy, QHBoxLayout
+    QWidget, QVBoxLayout, QGridLayout, QLabel, QLineEdit, QPushButton, QScrollArea, QSizePolicy, QHBoxLayout, QTextEdit
 )
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QIntValidator, QDoubleValidator, QFont
+from PyQt6.QtGui import QIntValidator, QDoubleValidator, QFont, QTextOption
 
 class TaperTab(QWidget):
     def __init__(self, parent=None):
@@ -37,7 +37,7 @@ class TaperTab(QWidget):
 
         container_layout.addLayout(self.grid)
         scroll_area.setWidget(container_widget)
-        layout.addWidget(scroll_area)
+        layout.addWidget(scroll_area, stretch=2)
 
         buttons_layout = QHBoxLayout()
         self.add_entry_btn = QPushButton("Add Entry")
@@ -51,8 +51,10 @@ class TaperTab(QWidget):
         buttons_layout.addWidget(self.calculate_btn)
         layout.addLayout(buttons_layout)
 
-        self.taper_result = QLabel("")
-        layout.addWidget(self.taper_result)
+        self.taper_result = QTextEdit()
+        self.taper_result.setReadOnly(True)  # Make the QTextEdit read-only
+        self.taper_result.setWordWrapMode(QTextOption.WrapMode.WordWrap)  # Enable word wrap
+        layout.addWidget(self.taper_result, stretch=1)
 
         self.setLayout(layout)
         self.setObjectName("Taper")
@@ -118,17 +120,43 @@ class TaperTab(QWidget):
         try:
             total_days = 0
             total_tablets = 0
+            sig_text = ""
 
             for i in range(len(self.tablets)):
-                days = self.days[i]
-                tablets = self.tablets[i]
+                days = int(self.days[i].text())
+                tablets = float(self.tablets[i].text())
+                total_days += days
+                total_tablets += tablets * days
+                
+                if tablets < 1:
+                    tablets_str = self.convert_to_fraction(tablets)
+                else:
+                    tablets_str = str(int(tablets))
+                
+                if i == 0:
+                    sig_text += f"Take {tablets_str} tablet{'s' if tablets > 1 else ''} by mouth once a day for {days} day{'s' if days > 1 else ''}, then "
+                else:
+                    sig_text += f"take {tablets_str} tablet{'s' if tablets > 1 else ''} daily for {days} day{'s' if days > 1 else ''}, then "
 
-                total_days += int(days.text())
-                total_tablets += float(tablets.text()) * int(days.text())
+            sig_text = sig_text.rstrip(', then ')
             
-            self.taper_result.setText(f"Total tablets needed: {total_tablets}\nHow many days it'll last: {total_days}")
+            self.taper_result.setHtml(f"Total tablets needed: {total_tablets}<br>How many days it'll last: {total_days}<br>Sample Sig:<br>{sig_text}")
         except ValueError:
-            self.taper_result.setText("Invalid Input")
+            self.taper_result.setHtml("Invalid Input")
+
+    def convert_to_fraction(self, value):
+        fractions = {
+            0.125: "1/8",
+            0.25: "1/4",
+            0.375: "3/8",
+            0.5: "1/2",
+            0.625: "5/8",
+            0.75: "3/4",
+            0.875: "7/8",
+        }
+        if value in fractions:
+            return fractions[value]
+        return str(value)
 
 def create_taper_tab(parent):
     taper_tab = TaperTab(parent)
